@@ -9,6 +9,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 @Slf4j
 @Component
@@ -28,6 +30,12 @@ public class LoginFilter extends OncePerRequestFilter {
     private static final String HEADER_USER_NAME = "X-User-Name";
     private static final String HEADER_ENABLED = "X-User-Enabled";
 
+    private final HandlerExceptionResolver resolver;
+
+    public LoginFilter(HandlerExceptionResolver resolver) {
+        this.resolver = resolver;
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -36,14 +44,21 @@ public class LoginFilter extends OncePerRequestFilter {
             SecurityContextHolder.clearContext();
 
             doLogin(request);
+        } catch (DisabledException e) {
+            log.warn("[LoginFilter] Access Denied: {}", e.getMessage());
+            resolver.resolveException(request, response, null, e);
+            return;
         } catch (Exception e) {
-            log.error("Failed to set user authentication in security context", e);
+            log.error("인증에 실패하였습니다: {}", e.getMessage(), e);
+            resolver.resolveException(request, response, null, e);
+            return;
+
         }
 
         filterChain.doFilter(request, response);
     }
 
-    private void doLogin(HttpServletRequest request)  {
+    private void doLogin(HttpServletRequest request) {
         String userId = request.getHeader(HEADER_USER_ID);
         String username = request.getHeader(HEADER_EMAIL);
 
@@ -77,8 +92,14 @@ public class LoginFilter extends OncePerRequestFilter {
                     .slackId(slackId)
                     .name(name)
                     .roles(roles)
-                    .enabled(enabled != null && enabled.equals("true"))
+                    .enabled("true".equalsIgnoreCase(enabled))
                     .build();
+
+            if (!userDetails.isEnabled()) {
+                String errorMsg = "승인 대기 중이거나 탈퇴한 사용자입니다.";
+                log.warn("[LoginFilter] 접근이 제한된 사용자 입니다: {}, 사유: {}", cleanUserId, errorMsg);
+                throw new DisabledException(errorMsg);
+            }
 
             Authentication authentication = new UsernamePasswordAuthenticationToken(
                     userDetails, null, userDetails.getAuthorities());

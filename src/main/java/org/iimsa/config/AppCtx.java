@@ -22,6 +22,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 // 스프링 부트의 자동 설정 매커니즘에 참여하여 라이브러리 로드 시 자동 실행됨
 @AutoConfiguration
@@ -35,8 +36,8 @@ import org.springframework.core.Ordered;
 public class AppCtx {
 
     @Bean
-    public LoginFilter loginFilter() {
-        return new LoginFilter();
+    public LoginFilter loginFilter(HandlerExceptionResolver resolver) {
+        return new LoginFilter(resolver);
     }
 
     @Bean
@@ -45,7 +46,7 @@ public class AppCtx {
     }
 
     @Bean
-    public CustomAccessDeniedHandler accessDeniedHandler(ObjectMapper  objectMapper) {
+    public CustomAccessDeniedHandler accessDeniedHandler(ObjectMapper objectMapper) {
         return new CustomAccessDeniedHandler(objectMapper);
     }
 
@@ -53,7 +54,9 @@ public class AppCtx {
     // SecurityConfig로 등록된 빈이 없다면 등록
     @Bean
     @ConditionalOnMissingBean(SecurityConfig.class)
-    public SecurityConfig securityConfig(LoginFilter loginFilter, CustomAuthenticationEntryPoint customAuthenticationEntryPoint, CustomAccessDeniedHandler accessDeniedHandler) {
+    public SecurityConfig securityConfig(LoginFilter loginFilter,
+                                         CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
+                                         CustomAccessDeniedHandler accessDeniedHandler) {
         return new SecurityConfigImpl(loginFilter, customAuthenticationEntryPoint, accessDeniedHandler);
     }
 
