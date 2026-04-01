@@ -72,7 +72,7 @@ publishing {
     repositories {
         maven {
             name = "GitHubPackages" // 저장소 별칭
-            url = uri("https://maven.pkg.github.com/II-MSA/common-module") // GitHub Packages 저장소 주소
+            url = uri("https://maven.pkg.github.com/apangmsa/common-module") // GitHub Packages 저장소 주소
             credentials {
                 username = System.getenv("GPR_USER") // 환경 변수에서 GitHub 사용자 ID
                 password = System.getenv("GPR_TOKEN") // 환경 변수에서 GitHub Personal Access Token(Classic) 로드
