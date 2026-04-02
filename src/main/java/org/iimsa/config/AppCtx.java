@@ -16,6 +16,7 @@ import org.iimsa.config.security.CustomAuthenticationEntryPoint;
 import org.iimsa.config.security.LoginFilter;
 import org.iimsa.config.security.SecurityConfig;
 import org.iimsa.config.security.SecurityConfigImpl;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -36,7 +37,7 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 public class AppCtx {
 
     @Bean
-    public LoginFilter loginFilter(HandlerExceptionResolver resolver) {
+    public LoginFilter loginFilter(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
         return new LoginFilter(resolver);
     }
 

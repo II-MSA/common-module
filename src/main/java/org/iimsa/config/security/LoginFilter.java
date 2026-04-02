@@ -9,6 +9,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -32,7 +33,7 @@ public class LoginFilter extends OncePerRequestFilter {
 
     private final HandlerExceptionResolver resolver;
 
-    public LoginFilter(HandlerExceptionResolver resolver) {
+    public LoginFilter(@Qualifier("handlerExceptionResolver")HandlerExceptionResolver resolver) {
         this.resolver = resolver;
     }
 
