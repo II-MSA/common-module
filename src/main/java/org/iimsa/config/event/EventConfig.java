@@ -3,7 +3,6 @@ package org.iimsa.config.event;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.concurrent.Executor;
-
 import org.iimsa.common.domain.InboxRepository;
 import org.iimsa.common.domain.OutboxRepository;
 import org.iimsa.common.event.Events;
@@ -50,12 +49,15 @@ public class EventConfig implements AsyncConfigurer {
     }
 
     @Bean
-    public OutboxEventListener outboxEventListener(OutboxRepository outboxRepository, KafkaTemplate<String, Object> kafkaTemplate, ObjectMapper objectMapper) {
+    public OutboxEventListener outboxEventListener(OutboxRepository outboxRepository,
+                                                   KafkaTemplate<String, Object> kafkaTemplate,
+                                                   ObjectMapper objectMapper) {
         return new OutboxEventListener(outboxRepository, kafkaTemplate, objectMapper);
     }
 
     @Bean
-    public OutboxRelayScheduler OutboxRelayScheduler(OutboxRepository outboxRepository, KafkaTemplate<String, Object> kafkaTemplate) {
+    public OutboxRelayScheduler OutboxRelayScheduler(OutboxRepository outboxRepository,
+                                                     KafkaTemplate<String, Object> kafkaTemplate) {
         return new OutboxRelayScheduler(outboxRepository, kafkaTemplate);
     }
 

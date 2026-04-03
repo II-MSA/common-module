@@ -27,23 +27,23 @@ import org.hibernate.type.SqlTypes;
 @Table(name = "P_OUTBOX", indexes = {@Index(name = "idx_outbox_status", columnList = "status")})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Outbox extends BaseEntity{
+public class Outbox extends BaseEntity {
     @Id
     @JdbcTypeCode(SqlTypes.UUID)
-    @Column(length=36, name="message_id")
+    @Column(length = 36, name = "message_id")
     @GeneratedValue(strategy = GenerationType.UUID)
     protected UUID id;
 
-    @Column(length=64, nullable = false, unique = true)
+    @Column(length = 64, nullable = false, unique = true)
     protected String correlationId; // SAGA 상관 ID - 같은 아이디를 가진 메세지는 동일한 처리 흐름에 묶여 있음
 
-    @Column(length=50, nullable = false)
+    @Column(length = 50, nullable = false)
     protected String domainType; // 도메인 종류
 
-    @Column(length=50, nullable = false)
+    @Column(length = 50, nullable = false)
     protected String domainId; // 도메인 식별자
 
-    @Column(length=100, nullable = false)
+    @Column(length = 100, nullable = false)
     protected String eventType; // 이벤트 타입, 카프카를 쓰게되면 Topic이 될 것
 
     @JdbcTypeCode(SqlTypes.JSON)
@@ -51,7 +51,7 @@ public class Outbox extends BaseEntity{
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
-    @Column(length=20, nullable=false)
+    @Column(length = 20, nullable = false)
     protected OutboxStatus status = OutboxStatus.PENDING;
 
     @Builder.Default

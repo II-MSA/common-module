@@ -33,7 +33,7 @@ public class LoginFilter extends OncePerRequestFilter {
 
     private final HandlerExceptionResolver resolver;
 
-    public LoginFilter(@Qualifier("handlerExceptionResolver")HandlerExceptionResolver resolver) {
+    public LoginFilter(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
         this.resolver = resolver;
     }
 

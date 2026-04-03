@@ -67,8 +67,11 @@ public class OutboxEventListener {
 
             kafkaTemplate.send(record)
                     .whenComplete((result, e) -> {
-                        if (e == null) handleSuccess(event.correlationId());
-                        else handleFailure(event, e);
+                        if (e == null) {
+                            handleSuccess(event.correlationId());
+                        } else {
+                            handleFailure(event, e);
+                        }
                     });
         });
     }
@@ -85,8 +88,7 @@ public class OutboxEventListener {
     }
 
     /**
-     * 실패 처리
-     * 최대 재시도 횟수 초과 시 DLT(Dead Letter Topic)로 메시지 발행
+     * 실패 처리 최대 재시도 횟수 초과 시 DLT(Dead Letter Topic)로 메시지 발행
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleFailure(OutboxEvent event, Throwable e) {
@@ -98,7 +100,8 @@ public class OutboxEventListener {
                 log.error("최대 재시도 횟수 초과(Total: {}). DLT로 격리합니다: {}", outbox.getRetryCount(), event.correlationId());
                 sendToDlt(event, outbox.getPayload());
             } else {
-                log.warn("메세지 전송 실패 (재시도 예정 {}/{}): {}", outbox.getRetryCount(), MAX_RETRY_COUNT, event.correlationId());
+                log.warn("메세지 전송 실패 (재시도 예정 {}/{}): {}", outbox.getRetryCount(), MAX_RETRY_COUNT,
+                        event.correlationId());
             }
         });
     }
@@ -110,8 +113,11 @@ public class OutboxEventListener {
             // DLT 전송은 재시도 없이 1회만 시도, 실패 시 에러 로그만 기록
             kafkaTemplate.send(dltTopic, event.domainId(), payload)
                     .whenComplete((res, e) -> {
-                        if (e != null) log.error("DLT 전송 실패: {}", event.correlationId(), e);
-                        else log.info("DLT 전송 성공: {}", event.correlationId());
+                        if (e != null) {
+                            log.error("DLT 전송 실패: {}", event.correlationId(), e);
+                        } else {
+                            log.info("DLT 전송 성공: {}", event.correlationId());
+                        }
                     });
         } catch (Exception e) {
             log.error("DLT 전송 중 예외 발생: {}", event.correlationId(), e);

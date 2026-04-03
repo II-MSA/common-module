@@ -34,13 +34,13 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Inbox {
     @Id
     @JdbcTypeCode(SqlTypes.UUID)
-    @Column(length=36, name="message_id")
+    @Column(length = 36, name = "message_id")
     protected UUID id; // Outbox에 등록된 메세지 ID와 동일하게 유지
 
-    @Column(length=50)
+    @Column(length = 50)
     protected String messageGroup;
 
     @CreatedDate
-    @Column(updatable=false)
+    @Column(updatable = false)
     protected LocalDateTime processedAt;
 }

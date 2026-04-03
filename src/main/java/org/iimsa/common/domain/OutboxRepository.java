@@ -8,5 +8,6 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 public interface OutboxRepository extends JpaRepository<Outbox, UUID>, QuerydslPredicateExecutor<Outbox> {
     List<Outbox> findByStatus(OutboxStatus status);
+
     Optional<Outbox> findByCorrelationId(String correlationId);
 }

@@ -6,4 +6,5 @@ public record OutboxEvent(
         String domainId,
         String eventType,
         Object payload
-) {}
+) {
+}

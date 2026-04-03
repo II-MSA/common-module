@@ -25,17 +25,22 @@ public class FeignConfig {
     public RequestInterceptor requestInterceptor() {
         return tpl -> {
             ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-            if (attrs == null) return;
+            if (attrs == null) {
+                return;
+            }
 
             HttpServletRequest req = attrs.getRequest();
 
             // Authorization 헤더 전파
             String auth = req.getHeader("Authorization");
-            if (StringUtils.hasText(auth)) tpl.header("Authorization", auth);
+            if (StringUtils.hasText(auth)) {
+                tpl.header("Authorization", auth);
+            }
 
             // Gateway로부터 넘어온 사용자 정보 헤더들 전파
             List<String> userHeaders = List.of(
-                    HEADER_TRACE_ID, HEADER_USER_ID, HEADER_USER_NAME, HEADER_EMAIL, HEADER_SLACK_ID, HEADER_ROLES, HEADER_ENABLED
+                    HEADER_TRACE_ID, HEADER_USER_ID, HEADER_USER_NAME, HEADER_EMAIL, HEADER_SLACK_ID, HEADER_ROLES,
+                    HEADER_ENABLED
             );
 
             for (String headerName : userHeaders) {

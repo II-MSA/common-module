@@ -6,7 +6,8 @@ public class UnAuthorizedException extends CustomException {
     public UnAuthorizedException() {
         this("로그인이 필요한 서비스입니다.");
     }
+
     public UnAuthorizedException(String message) {
-        super( message, HttpStatus.UNAUTHORIZED);
+        super(message, HttpStatus.UNAUTHORIZED);
     }
 }

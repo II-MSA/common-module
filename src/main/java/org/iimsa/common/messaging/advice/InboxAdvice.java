@@ -60,14 +60,20 @@ public class InboxAdvice {
             // Kafka 리스너에서 ConsumerRecord<K, V>를 파라미터로 받을 경우
             if (arg instanceof ConsumerRecord<?, ?> record) {
                 Header header = record.headers().lastHeader("message_id");
-                if (header != null) return parseUuid(header.value());
+                if (header != null) {
+                    return parseUuid(header.value());
+                }
             }
 
             // Spring Messaging Message 객체인 경우
             if (arg instanceof Message<?> message) {
                 Object header = message.getHeaders().get("message_id");
-                if (header instanceof byte[] bytes) return parseUuid(bytes);
-                if (header instanceof String str) return UUID.fromString(str);
+                if (header instanceof byte[] bytes) {
+                    return parseUuid(bytes);
+                }
+                if (header instanceof String str) {
+                    return UUID.fromString(str);
+                }
             }
         }
         return null;
